@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mufeed — Team cards</title>
+<meta name="description" content="Mufeed team business cards — view a card or add your own">
+<meta name="theme-color" content="#131017">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#131017; --surface:#1B1520; --ink:#EDE8F0; --muted:#A29AA9;
+    --line:#2E2637; --accent:#C077CE; --accent-soft:rgba(192,119,206,.10);
+    --btn-bg:#8A4699; --btn-bg-hover:#763B84; --btn-ink:#F5EFF7;
+    --glow:rgba(192,119,206,.07);
+    --body:"IBM Plex Sans Arabic",system-ui,sans-serif;
+    --display:"Fraunces",Georgia,serif;
+  }
+  html[data-theme="light"]{
+    --bg:#F7F4F9; --surface:#FDFCFE; --ink:#251C2A; --muted:#7C7284;
+    --line:#E9E1EF; --accent:#8E3B9C; --accent-soft:#F5EBF8;
+    --btn-bg:#8E3B9C; --btn-bg-hover:#772F83; --btn-ink:#FDFCFE;
+    --glow:rgba(255,255,255,.9);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    min-height:100vh;
+    background:var(--bg);
+    background-image:radial-gradient(ellipse 90% 50% at 50% -10%, var(--glow) 0%, rgba(255,255,255,0) 60%);
+    color:var(--ink);
+    font-family:var(--body);
+    display:flex;flex-direction:column;align-items:center;
+    padding:40px 18px 60px;
+  }
+  .page{width:100%;max-width:440px}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:34px}
+  .brand img{height:26px;width:auto;display:block}
+  .brand .logo-light{display:none}
+  html[data-theme="light"] .brand .logo-dark{display:none}
+  html[data-theme="light"] .brand .logo-light{display:block}
+  .controls{display:flex;gap:8px}
+  .chip{
+    border:1px solid var(--line);background:transparent;color:var(--muted);
+    font-family:var(--body);font-size:.78rem;font-weight:500;
+    border-radius:999px;padding:5px 13px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  .chip:hover{color:var(--ink);border-color:var(--muted)}
+  .chip svg{width:14px;height:14px;stroke:currentColor}
+
+  h2{
+    font-family:var(--display);font-weight:600;font-size:1.25rem;
+    margin:0 0 14px;
+  }
+  html[lang="ar"] h2{font-family:var(--body);font-weight:600}
+
+  .list{display:flex;flex-direction:column;gap:10px;margin-bottom:42px}
+  .person{
+    display:flex;flex-direction:column;gap:3px;text-decoration:none;color:var(--ink);
+    background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:15px 20px;
+  }
+  .person:hover{border-color:var(--accent)}
+  .person strong{font-family:var(--display);font-weight:600;font-size:1.12rem}
+  html[lang="ar"] .person strong{font-family:var(--body)}
+  .person span{font-size:.82rem;color:var(--muted)}
+
+  form{
+    background:var(--surface);border:1px solid var(--line);border-radius:16px;
+    padding:22px 20px;display:flex;flex-direction:column;gap:14px;
+  }
+  .field{display:flex;flex-direction:column;gap:6px;min-width:0}
+  .field input{width:100%}
+  .field label{font-size:.8rem;font-weight:500;color:var(--muted)}
+  .field input{
+    background:transparent;border:1px solid var(--line);border-radius:10px;
+    color:var(--ink);font-family:var(--body);font-size:.95rem;padding:10px 12px;
+  }
+  .field input:focus{outline:none;border-color:var(--accent)}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .hint{font-size:.74rem;color:var(--muted);line-height:1.6}
+  .hint a{color:var(--accent)}
+
+  .btn{
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    width:100%;padding:13px 16px;border-radius:11px;
+    font-family:var(--body);font-size:.95rem;font-weight:600;cursor:pointer;
+    text-decoration:none;border:1px solid transparent;
+  }
+  .btn-primary{background:var(--btn-bg);color:var(--btn-ink)}
+  .btn-primary:hover{background:var(--btn-bg-hover)}
+  .btn-ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+  .btn-ghost:hover{border-color:var(--muted)}
+  .out-buttons{display:none;flex-direction:column;gap:9px}
+  .out-buttons.show{display:flex}
+  .error{display:none;color:#E07B7B;font-size:.82rem}
+  .error.show{display:block}
+
+  :is(.btn,.chip,.person,.field input):focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  footer{
+    margin-top:40px;font-size:.72rem;color:var(--muted);
+    letter-spacing:.14em;text-transform:uppercase;font-family:var(--display);
+    text-align:center;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="topbar">
+    <span class="brand" aria-label="Mufeed">
+      <img class="logo-dark" src="/logo-white.png" alt="Mufeed">
+      <img class="logo-light" src="/logo-ink.png" alt="">
+    </span>
+    <div class="controls">
+      <button class="chip" id="themeToggle" type="button" aria-label="Switch theme">
+        <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </button>
+      <button class="chip" id="langToggle" type="button">عربي</button>
+    </div>
+  </div>
+
+  <h2 data-ar="الفريق" data-en="Team">Team</h2>
+  <nav class="list">
+    <a class="person" href="/ahmad/"><strong data-ar="أحمد ربايعة" data-en="Ahmad Rabaiah">Ahmad Rabaiah</strong><span data-ar="قائد التحول الرقمي وأخصائي الذكاء الاصطناعي" data-en="Digital Transformation Leader &amp; AI Specialist">Digital Transformation Leader &amp; AI Specialist</span></a>
+  </nav>
+
+  <h2 data-ar="أضف بطاقتك" data-en="Add your card">Add your card</h2>
+  <form id="addForm" novalidate>
+    <div class="row">
+      <div class="field">
+        <label data-ar="الاسم الكامل (إنجليزي)" data-en="Full name (English)">Full name (English)</label>
+        <input id="fName" required placeholder="Sara Alqahtani">
+      </div>
+      <div class="field">
+        <label data-ar="الاسم (عربي)" data-en="Name (Arabic)">Name (Arabic)</label>
+        <input id="fNameAr" dir="rtl" placeholder="سارة القحطاني">
+      </div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label data-ar="المسمى (إنجليزي)" data-en="Job title (English)">Job title (English)</label>
+        <input id="fTitle" required placeholder="Product Manager">
+      </div>
+      <div class="field">
+        <label data-ar="المسمى (عربي)" data-en="Job title (Arabic)">Job title (Arabic)</label>
+        <input id="fTitleAr" dir="rtl" placeholder="مديرة منتجات">
+      </div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label data-ar="الجوال" data-en="Phone">Phone</label>
+        <input id="fPhone" required inputmode="tel" dir="ltr" placeholder="05xxxxxxxx">
+      </div>
+      <div class="field">
+        <label data-ar="البريد" data-en="Email">Email</label>
+        <input id="fEmail" type="email" dir="ltr" placeholder="name@mufeed.com">
+      </div>
+    </div>
+    <div class="field">
+      <label data-ar="لينكدإن (اختياري)" data-en="LinkedIn (optional)">LinkedIn (optional)</label>
+      <input id="fLinkedin" dir="ltr" placeholder="https://www.linkedin.com/in/...">
+    </div>
+    <div class="row">
+      <div class="field">
+        <label data-ar="موقع شخصي (اختياري)" data-en="Website (optional)">Website (optional)</label>
+        <input id="fWebsite" dir="ltr" placeholder="https://...">
+      </div>
+      <div class="field">
+        <label data-ar="رابط بطاقتك (لاتيني)" data-en="Card URL slug">Card URL slug</label>
+        <input id="fSlug" dir="ltr" placeholder="sara">
+      </div>
+    </div>
+
+    <p class="error" id="formError" data-ar="أكمل الاسم الإنجليزي والمسمى والجوال أولًا" data-en="Full name, job title, and phone are required">Full name, job title, and phone are required</p>
+
+    <button class="btn btn-primary" id="generate" type="submit">
+      <span data-ar="جهّز بطاقتي" data-en="Prepare my card">Prepare my card</span>
+    </button>
+
+    <div class="out-buttons" id="outButtons">
+      <a class="btn btn-primary" id="ghLink" href="#" target="_blank" rel="noopener">
+        <span data-ar="أنشئ الملف على GitHub (الطريقة الرسمية)" data-en="Create the file on GitHub">Create the file on GitHub</span>
+      </a>
+      <a class="btn btn-ghost" id="waLink" href="#" target="_blank" rel="noopener">
+        <span data-ar="أرسل بياناتي للمسؤول عبر واتساب" data-en="Send to the admin on WhatsApp">Send to the admin on WhatsApp</span>
+      </a>
+      <a class="btn btn-ghost" id="dlLink" href="#">
+        <span data-ar="نزّل card.json" data-en="Download card.json">Download card.json</span>
+      </a>
+      <p class="hint" id="photoHint"></p>
+    </div>
+  </form>
+
+  <footer>Riyadh</footer>
+</div>
+
+<script>
+  const REPO = "https://github.com/ahmadra2002KFU/Mufeed-Cards";
+  const ADMIN_WHATSAPP = "966547937209";
+
+  /* ---------- add-card tool ---------- */
+  const $ = id => document.getElementById(id);
+  const slugify = s => s.toLowerCase().trim().split(/\s+/)[0].replace(/[^a-z0-9-]/g, "");
+
+  $("fName").addEventListener("input", () => {
+    if (!$("fSlug").dataset.touched) $("fSlug").value = slugify($("fName").value);
+  });
+  $("fSlug").addEventListener("input", () => { $("fSlug").dataset.touched = "1"; });
+
+  function normalizePhone(raw) {
+    let d = raw.replace(/[^\d+]/g, "");
+    if (d.startsWith("00")) d = "+" + d.slice(2);
+    if (d.startsWith("05")) d = "+966" + d.slice(1);
+    if (d.startsWith("966")) d = "+" + d;
+    return d;
+  }
+
+  function buildCard() {
+    const name = $("fName").value.trim();
+    const nameAr = $("fNameAr").value.trim();
+    const title = $("fTitle").value.trim();
+    const phone = normalizePhone($("fPhone").value);
+    if (!name || !title || phone.length < 8) return null;
+    const parts = name.split(/\s+/);
+    const arParts = (nameAr || name).split(/\s+/);
+    return {
+      name_en: parts.length > 2 ? parts[0] + " " + parts[parts.length - 1] : name,
+      name_ar: nameAr || name,
+      full_name_en: name,
+      vcard: {
+        family: parts.length > 1 ? parts[parts.length - 1] : "",
+        given: parts[0],
+        middle: parts.slice(1, -1).join(" ")
+      },
+      phonetic_first_ar: arParts[0],
+      phonetic_last_ar: arParts.slice(1).join(" "),
+      title_en: title,
+      title_ar: $("fTitleAr").value.trim() || title,
+      org: "Mufeed",
+      org_ar: "مفيد",
+      phone: phone,
+      whatsapp: phone.replace(/^\+/, ""),
+      email: $("fEmail").value.trim(),
+      website: $("fWebsite").value.trim(),
+      linkedin: $("fLinkedin").value.trim(),
+      notes: "Mufeed",
+      monogram_en: name[0].toUpperCase(),
+      monogram_ar: (nameAr || name)[0]
+    };
+  }
+
+  $("addForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const card = buildCard();
+    const slug = slugify($("fSlug").value || $("fName").value);
+    if (!card || !slug) {
+      $("formError").classList.add("show");
+      $("outButtons").classList.remove("show");
+      return;
+    }
+    $("formError").classList.remove("show");
+    const json = JSON.stringify(card, null, 2) + "\n";
+    const isAr = document.documentElement.lang === "ar";
+
+    $("ghLink").href = REPO + "/new/main?filename=" +
+      encodeURIComponent("people/" + slug + "/card.json") +
+      "&value=" + encodeURIComponent(json);
+    $("waLink").href = "https://wa.me/" + ADMIN_WHATSAPP + "?text=" +
+      encodeURIComponent((isAr ? "بطاقة جديدة لموقع البطاقات:\n" : "New card for the cards site:\n") + json);
+    $("dlLink").href = "data:application/json;charset=utf-8," + encodeURIComponent(json);
+    $("dlLink").setAttribute("download", "card.json");
+    $("photoHint").innerHTML = (isAr
+      ? "صورتك (اختياري): ارفع ملفًا باسم <b>photo.jpg</b> إلى "
+      : "Your photo (optional): upload a file named <b>photo.jpg</b> to ") +
+      '<a target="_blank" rel="noopener" href="' + REPO + "/upload/main/people/" + slug + '">people/' + slug + "</a>" +
+      (isAr ? " — تُنشر البطاقة تلقائيًا خلال دقيقة بعد الاعتماد." : " — the card deploys automatically about a minute after the change lands.");
+    $("outButtons").classList.add("show");
+  });
+
+  /* ---------- language toggle — English first ---------- */
+  const langToggle = $("langToggle");
+  function setLang(lang) {
+    const isAr = lang === "ar";
+    document.documentElement.lang = lang;
+    document.documentElement.dir = isAr ? "rtl" : "ltr";
+    langToggle.textContent = isAr ? "English" : "عربي";
+    document.title = isAr ? "مفيد — بطاقات الفريق" : "Mufeed — Team cards";
+    document.querySelectorAll("[data-ar]").forEach(el => {
+      el.textContent = isAr ? el.dataset.ar : el.dataset.en;
+    });
+    try { localStorage.setItem("cards-lang", lang); } catch (e) {}
+  }
+  langToggle.addEventListener("click", () => {
+    setLang(document.documentElement.lang === "ar" ? "en" : "ar");
+  });
+  try { if (localStorage.getItem("cards-lang") === "ar") setLang("ar"); } catch (e) {}
+
+  /* ---------- theme toggle — dark first ---------- */
+  const themeIcon = $("themeIcon");
+  const SUN = '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>';
+  const MOON = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+  function setTheme(theme) {
+    if (theme === "light") {
+      document.documentElement.setAttribute("data-theme", "light");
+      themeIcon.innerHTML = MOON;
+    } else {
+      document.documentElement.removeAttribute("data-theme");
+      themeIcon.innerHTML = SUN;
+    }
+    document.querySelector('meta[name="theme-color"]')
+      .setAttribute("content", theme === "light" ? "#F7F4F9" : "#131017");
+    try { localStorage.setItem("cards-theme", theme); } catch (e) {}
+  }
+  $("themeToggle").addEventListener("click", () => {
+    const isLight = document.documentElement.getAttribute("data-theme") === "light";
+    setTheme(isLight ? "dark" : "light");
+  });
+  try { if (localStorage.getItem("cards-theme") === "light") setTheme("light"); } catch (e) {}
+</script>
+</body>
+</html>
