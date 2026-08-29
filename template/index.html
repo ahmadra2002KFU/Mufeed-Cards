@@ -57,16 +57,6 @@
   }
   html[lang="ar"] h2{font-family:var(--body);font-weight:600}
 
-  .list{display:flex;flex-direction:column;gap:10px;margin-bottom:42px}
-  .person{
-    display:flex;flex-direction:column;gap:3px;text-decoration:none;color:var(--ink);
-    background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:15px 20px;
-  }
-  .person:hover{border-color:var(--accent)}
-  .person strong{font-family:var(--display);font-weight:600;font-size:1.12rem}
-  html[lang="ar"] .person strong{font-family:var(--body)}
-  .person span{font-size:.82rem;color:var(--muted)}
-
   form{
     background:var(--surface);border:1px solid var(--line);border-radius:16px;
     padding:22px 20px;display:flex;flex-direction:column;gap:14px;
@@ -98,7 +88,7 @@
   .error{display:none;color:#E07B7B;font-size:.82rem}
   .error.show{display:block}
 
-  :is(.btn,.chip,.person,.field input):focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  :is(.btn,.chip,.field input):focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
   footer{
     margin-top:40px;font-size:.72rem;color:var(--muted);
@@ -122,11 +112,6 @@
       <button class="chip" id="langToggle" type="button">عربي</button>
     </div>
   </div>
-
-  <h2 data-ar="الفريق" data-en="Team">Team</h2>
-  <nav class="list">
-{{PEOPLE_LIST}}
-  </nav>
 
   <h2 data-ar="أضف بطاقتك" data-en="Add your card">Add your card</h2>
   <form id="addForm" novalidate>
