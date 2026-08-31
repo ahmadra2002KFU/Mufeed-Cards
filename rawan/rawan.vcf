@@ -1,0 +1,14 @@
+BEGIN:VCARD
+VERSION:3.0
+N;CHARSET=UTF-8:Alsharef;Rawan;;;
+FN;CHARSET=UTF-8:Rawan Alsharef
+X-PHONETIC-FIRST-NAME;CHARSET=UTF-8:روان
+X-PHONETIC-LAST-NAME;CHARSET=UTF-8:الشريف
+ORG;CHARSET=UTF-8:Mufeed
+TITLE;CHARSET=UTF-8:Operations Manager
+TEL;TYPE=CELL:+966500899506
+EMAIL;TYPE=WORK:rhamid@evex.sa
+item1.URL:https://www.linkedin.com/in/rawan-alsharef-11808219b
+item1.X-ABLabel:LinkedIn
+NOTE;CHARSET=UTF-8:Mufeed
+END:VCARD
