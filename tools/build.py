@@ -50,11 +50,11 @@ def build_vcf(p: dict, photo: Path | None) -> str:
         lines.append(f"X-PHONETIC-FIRST-NAME;CHARSET=UTF-8:{p['phonetic_first_ar']}")
     if p.get("phonetic_last_ar"):
         lines.append(f"X-PHONETIC-LAST-NAME;CHARSET=UTF-8:{p['phonetic_last_ar']}")
-    lines += [
-        f"ORG;CHARSET=UTF-8:{p['org']}",
-        f"TITLE;CHARSET=UTF-8:{p['title_en']}",
-        f"TEL;TYPE=CELL:{p['phone']}",
-    ]
+    if p.get("org"):
+        lines.append(f"ORG;CHARSET=UTF-8:{p['org']}")
+    if p.get("title_en"):
+        lines.append(f"TITLE;CHARSET=UTF-8:{p['title_en']}")
+    lines.append(f"TEL;TYPE=CELL:{p['phone']}")
     if p.get("email"):
         lines.append(f"EMAIL;TYPE=WORK:{p['email']}")
     if p.get("website"):
@@ -68,7 +68,9 @@ def build_vcf(p: dict, photo: Path | None) -> str:
         im.save(buf, "JPEG", quality=82, optimize=True)
         b64 = base64.b64encode(buf.getvalue()).decode()
         lines.append("PHOTO;ENCODING=b;TYPE=JPEG:" + b64)
-    lines += [f"NOTE;CHARSET=UTF-8:{p['notes']}", "END:VCARD"]
+    if p.get("notes"):
+        lines.append(f"NOTE;CHARSET=UTF-8:{p['notes']}")
+    lines.append("END:VCARD")
     folded: list[str] = []
     for line in lines:
         folded.extend(fold(line))
@@ -97,21 +99,32 @@ def render_card(template: str, p: dict, slug: str, has_photo: bool) -> str:
             "website": p.get("website", ""),
             "linkedin": p.get("linkedin", ""),
             "fullName": p["full_name_en"],
-            "jobTitle": p["title_en"],
-            "org": p["org"],
-            "notes": p["notes"],
+            "jobTitle": p.get("title_en", ""),
+            "org": p.get("org", ""),
+            "notes": p.get("notes", ""),
             "vcf": f"{slug}.vcf",
         },
         ensure_ascii=False,
     )
+    role_parts = []
+    if p.get("title_en"):
+        role_parts.append(
+            f'<span data-ar="{html.escape(p.get("title_ar") or p["title_en"])}" '
+            f'data-en="{html.escape(p["title_en"])}">{html.escape(p["title_en"])}</span>'
+        )
+    if p.get("title_en") and p.get("org"):
+        role_parts.append('<span aria-hidden="true"> · </span>')
+    if p.get("org"):
+        role_parts.append(
+            f'<span class="org" data-ar="{html.escape(p.get("org_ar") or p["org"])}" '
+            f'data-en="{html.escape(p["org"])}">{html.escape(p["org"])}</span>'
+        )
+    role_html = f'<p class="role">{"".join(role_parts)}</p>' if role_parts else ""
     tokens = {
         "{{NAME_EN}}": html.escape(p["name_en"]),
         "{{NAME_AR}}": html.escape(p["name_ar"]),
-        "{{TITLE_AR}}": html.escape(p["title_ar"]),
-        "{{TITLE_EN_ATTR}}": html.escape(p["title_en"]),
-        "{{TITLE_EN_HTML}}": html.escape(p["title_en"]),
-        "{{ORG_EN}}": html.escape(p["org"]),
-        "{{ORG_AR}}": html.escape(p["org_ar"]),
+        "{{ROLE_HTML}}": role_html,
+        "{{ORG_EN}}": html.escape(p.get("org") or "Mufeed"),
         "{{PORTRAIT}}": portrait,
         "{{VCF_FILE}}": f"{slug}.vcf",
         "{{VCF_DOWNLOAD}}": f"{p['full_name_en'].replace(' ', '-')}.vcf",
@@ -128,8 +141,9 @@ def render_directory(entries: list[dict]) -> str:
         f'    <a class="person" href="/{e["slug"]}/">'
         f'<strong data-ar="{html.escape(e["name_ar"])}" data-en="{html.escape(e["name_en"])}">'
         f'{html.escape(e["name_en"])}</strong>'
-        f'<span data-ar="{html.escape(e["title_ar"])}" data-en="{html.escape(e["title_en"])}">'
-        f'{html.escape(e["title_en"])}</span></a>'
+        f'<span data-ar="{html.escape(e.get("title_ar") or e.get("title_en", ""))}" '
+        f'data-en="{html.escape(e.get("title_en", ""))}">'
+        f'{html.escape(e.get("title_en", ""))}</span></a>'
         for e in entries
     )
     template = (ROOT / "template" / "index.html").read_text(encoding="utf-8")

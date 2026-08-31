@@ -273,11 +273,7 @@
 
       <div class="identity">
         <h1 class="name" data-ar="{{NAME_AR}}" data-en="{{NAME_EN}}">{{NAME_EN}}</h1>
-        <p class="role">
-          <span data-ar="{{TITLE_AR}}" data-en="{{TITLE_EN_ATTR}}">{{TITLE_EN_HTML}}</span>
-          <span aria-hidden="true"> · </span>
-          <span class="org" data-ar="{{ORG_AR}}" data-en="{{ORG_EN}}">{{ORG_EN}}</span>
-        </p>
+        {{ROLE_HTML}}
       </div>
 
       <div class="rule" aria-hidden="true">
@@ -363,8 +359,8 @@
       "S.name=" + enc(CARD.fullName) + ";" +
       "S.phone=" + enc(CARD.phone) + ";" +
       (CARD.email ? "S.email=" + enc(CARD.email) + ";" : "") +
-      "S.company=" + enc(CARD.org) + ";" +
-      "S.job_title=" + enc(CARD.jobTitle) + ";" +
+      (CARD.org ? "S.company=" + enc(CARD.org) + ";" : "") +
+      (CARD.jobTitle ? "S.job_title=" + enc(CARD.jobTitle) + ";" : "") +
       "S.notes=" + enc([CARD.notes, CARD.website, CARD.linkedin].filter(Boolean).join(" · ")) + ";" +
       "S.browser_fallback_url=" + enc(new URL(CARD.vcf, location.href).href) + ";" +
       "end";
